@@ -1,7 +1,22 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
+import React, { Component } from 'react';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+
+const styles = StyleSheet.create({
+  modal: {
+    flex: 1,
+    paddingTop: 60,
+  },
+  webview: {
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+  },
+  dismissContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,.3)',
+  },
+});
 
 const CONSTANTS = {
   VERSION: '9.0',
@@ -333,13 +348,21 @@ class DigioRNComponent extends Component {
   render() {
     if (this.state.showWebView) {
       return (
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          {this.state.showWebView && this.renderContent()}
-        </View>
+        <Modal transparent={true}>
+          <View style={styles.modal}>
+            <TouchableOpacity
+              style={styles.dismissContainer}
+              onPress={() => {
+                if (this.props.hasOwnProperty('onDismiss')) {
+                  this.props.onDismiss();
+                }
+              }}
+            >
+              <View />
+            </TouchableOpacity>
+            {this.state.showWebView && this.renderContent()}
+          </View>
+        </Modal>
       );
     }
     return <View></View>;
@@ -348,6 +371,7 @@ class DigioRNComponent extends Component {
   renderContent() {
     return (
       <WebView
+        style={styles.webview}
         source={{ uri: this.digioUrl }}
         onNavigationStateChange={this._onNavigationStateChange.bind(this)}
         ref={(ref) => (this.webview = ref)}
@@ -390,13 +414,13 @@ class DigioRNComponent extends Component {
   }
 
   onWebViewLoadStart() {
-    this.webview.injectJavaScript(
-      'if(window.opener!==window.ReactNativeWebView){window.opener=window.ReactNativeWebView;}'
-    );
-    if (!this.loading) {
-      this.loading = `document.body.appendChild(${this.getLoadingHtml()})`;
-      this.webview.injectJavaScript(this.loading);
-    }
+    // this.webview.injectJavaScript(
+    //   'if(window.opener!==window.ReactNativeWebView){window.opener=window.ReactNativeWebView;}'
+    // );
+    // if (!this.loading) {
+    //   this.loading = `document.body.appendChild(${this.getLoadingHtml()})`;
+    //   this.webview.injectJavaScript(this.loading);
+    // }
   }
 
   _onNavigationStateChange(webviewState) {
