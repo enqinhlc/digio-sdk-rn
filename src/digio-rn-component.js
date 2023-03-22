@@ -1,20 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 const styles = StyleSheet.create({
-  modal: {
-    flex: 1,
-    paddingTop: 60,
-  },
   webview: {
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
   dismissContainer: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,.3)',
+    // backgroundColor: 'rgba(0,0,0,.3)',
+    backgroundColor: 'orange',
   },
 });
 
@@ -347,23 +344,7 @@ class DigioRNComponent extends Component {
 
   render() {
     if (this.state.showWebView) {
-      return (
-        <Modal transparent={true}>
-          <View style={styles.modal}>
-            <TouchableOpacity
-              style={styles.dismissContainer}
-              onPress={() => {
-                if (this.props.hasOwnProperty('onDismiss')) {
-                  this.props.onDismiss();
-                }
-              }}
-            >
-              <View />
-            </TouchableOpacity>
-            {this.state.showWebView && this.renderContent()}
-          </View>
-        </Modal>
-      );
+      return this.state.showWebView ? this.renderContent() : null;
     }
     return <View></View>;
   }
@@ -371,6 +352,7 @@ class DigioRNComponent extends Component {
   renderContent() {
     return (
       <WebView
+        userAgent={this.props.userAgent}
         style={styles.webview}
         source={{ uri: this.digioUrl }}
         onNavigationStateChange={this._onNavigationStateChange.bind(this)}
